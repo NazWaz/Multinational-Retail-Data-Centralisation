@@ -52,17 +52,6 @@ user_data.head(10)
 
 #%%
 # Uploads user data to "dim_users"
-USER = "postgres"
-PASSWORD = "Wazidur786"
-HOST = "localhost"
-PORT = 5432
-DATABASE = "sales_data"
-
-engine = sqlalchemy.create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
-
-user_data.to_sql("dim_users", engine, if_exists="replace")
-
-# %%
 USER = db_creds["USER"]
 PASSWORD = db_creds["PASSWORD"] 
 HOST = db_creds["HOST"]
