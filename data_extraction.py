@@ -12,15 +12,16 @@ class DataExtractor:
     def __init__(self):
         pass
 
-    def read_rds_table(self):
+    # extracts table using table name and returns pd dataframe     
+    def read_rds_table(self, table_name):
         from database_utils import DatabaseConnector 
         dbsconnector = DatabaseConnector()
         source_engine = dbsconnector.init_db_engine()
-        user_data = pd.read_sql_table("legacy_users", source_engine)
-        return user_data
+        data = pd.read_sql_table(table_name, source_engine)
+        return data
 
 if __name__ == "__main__":
     extractor = DataExtractor()
-    extractor.read_rds_table()
-
+    user_data = extractor.read_rds_table("legacy_users")
+    display(user_data)
 # %%
