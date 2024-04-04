@@ -5,6 +5,7 @@ from sqlalchemy import inspect
 from sqlalchemy import text
 import psycopg2
 import pandas as pd
+import numpy as np
 #%%
 
 class DataCleaning:
@@ -17,15 +18,24 @@ class DataCleaning:
         from data_extraction import DataExtractor
         extractor = DataExtractor()
         user_data = extractor.read_rds_table("legacy_users")
-        #display(user_data.info())
-        #user_data.first_name = user_data.first_name.astype("string")
-        #user_data.last_name = user_data.last_name.astype("string")
-        #display(user_data.info())
-        return user_data
+        # replaces NULL with NaN and drops
+        clean_user_data = user_data.replace("NULL", np.nan)
+        clean_user_data = clean_user_data.dropna()
+        # creates mask to filter countries
+        country = ["United Kingdom", "Germany", "United States"]
+        mask = clean_user_data["country"].isin(country)
+        clean_user_data = clean_user_data[mask]
+        # replaces GGB with GB
+        clean_user_data = clean_user_data.replace("GGB", "GB")
+        # puts dates into correct format
+        clean_user_data["date_of_birth"] = pd.to_datetime(clean_user_data["date_of_birth"], format="mixed")
+        clean_user_data["join_date"] = pd.to_datetime(clean_user_data["join_date"], format="mixed")
+
+        return clean_user_data
 
 
 if __name__ == "__main__":
     cleaning = DataCleaning()
-    user_data = cleaning.clean_user_data()
-    display(user_data)
+    clean_user_data = cleaning.clean_user_data()
+    display(clean_user_data)
 # %%

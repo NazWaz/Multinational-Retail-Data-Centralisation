@@ -39,10 +39,10 @@ class DatabaseConnector:
         db_creds = self.read_db_creds()
         from data_cleaning import DataCleaning
         cleaning = DataCleaning()
-        user_data = cleaning.clean_user_data()
+        data = cleaning.clean_user_data()
         HOST, PASSWORD, USER, DATABASE, PORT = [db_creds[i] for i in (5, 6, 7, 8, 9)] 
         sink_engine = sqlalchemy.create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
-        user_data.to_sql(table_name, sink_engine, if_exists="replace")
+        data.to_sql(table_name, sink_engine, if_exists="replace")
 
 
        
@@ -53,20 +53,6 @@ if __name__ == "__main__":
     #dbsconnector.init_db_engine()
     #print(dbsconnector.init_db_engine())
     #dbsconnector.list_db_tables()
-    #dbsconnector.upload_to_db("dim_users")
+    dbsconnector.upload_to_db("dim_users")
     
-
-# %%
-'''
-def upload_user_data():
-    
-
-    DatabaseConnector.upload_to_db(user_data, dim_users)
-
-
-
-if __name__ == "__main__":
-    upload_user_data()
-    
-'''
 # %%
