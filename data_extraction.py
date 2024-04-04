@@ -6,6 +6,8 @@ from sqlalchemy import text
 import psycopg2
 import pandas as pd
 
+import tabula
+
 # %%
 class DataExtractor:
 
@@ -19,9 +21,24 @@ class DataExtractor:
         source_engine = dbsconnector.init_db_engine()
         data = pd.read_sql_table(table_name, source_engine)
         return data
+    
+
+    # takes in link and returns pandas DataFrame
+    def retrieve_pdf_data(self, link):
+        card_data_list = tabula.read_pdf(link, pages="all")
+        card_data = pd.concat(card_data_list)
+        return card_data
+
+
+
+
 
 if __name__ == "__main__":
     extractor = DataExtractor()
-    user_data = extractor.read_rds_table("legacy_users")
-    display(user_data)
+    #user_data = extractor.read_rds_table("legacy_users")
+    #display(user_data)
+    #link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
+    #card_data = extractor.retrieve_pdf_data(link)
+    #display(card_data)
+
 # %%

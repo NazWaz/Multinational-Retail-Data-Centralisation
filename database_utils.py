@@ -6,7 +6,6 @@ from sqlalchemy import text
 import psycopg2
 import pandas as pd
 
-
 #%%
 
 class DatabaseConnector:
@@ -35,11 +34,9 @@ class DatabaseConnector:
         print(inspector.get_table_names())
 
     # uploads data from pd to database in a table
-    def upload_to_db(self, table_name):
+    def upload_to_db(self, data,  table_name):
         db_creds = self.read_db_creds()
-        from data_cleaning import DataCleaning
-        cleaning = DataCleaning()
-        data = cleaning.clean_user_data()
+        
         HOST, PASSWORD, USER, DATABASE, PORT = [db_creds[i] for i in (5, 6, 7, 8, 9)] 
         sink_engine = sqlalchemy.create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
         data.to_sql(table_name, sink_engine, if_exists="replace")
@@ -53,6 +50,15 @@ if __name__ == "__main__":
     #dbsconnector.init_db_engine()
     #print(dbsconnector.init_db_engine())
     #dbsconnector.list_db_tables()
-    dbsconnector.upload_to_db("dim_users")
+    from data_cleaning import DataCleaning
+    cleaning = DataCleaning()
+
+    # uploads user data
+    clean_user_data = cleaning.clean_user_data()
+    dbsconnector.upload_to_db(clean_user_data, "dim_users")
+
+    # uploads card data
+    clean_card_data = cleaning.clean_card_data()
+    dbsconnector.upload_to_db(clean_card_data, "dim_card_details")
     
 # %%
