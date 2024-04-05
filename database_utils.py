@@ -61,4 +61,9 @@ if __name__ == "__main__":
     clean_card_data = cleaning.clean_card_data()
     dbsconnector.upload_to_db(clean_card_data, "dim_card_details")
     
+    # uploads store data
+    clean_store_data = cleaning.clean_store_data()
+    dbsconnector.upload_to_db(clean_store_data, "dim_store_details")
+
+
 # %%
