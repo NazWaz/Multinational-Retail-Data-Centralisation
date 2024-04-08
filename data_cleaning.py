@@ -6,6 +6,7 @@ from sqlalchemy import text
 import psycopg2
 import pandas as pd
 import numpy as np
+import regex
 #%%
 
 class DataCleaning:
@@ -74,6 +75,8 @@ class DataCleaning:
         clean_store_data["address"] = clean_store_data["address"].str.replace("\n", " ")
         # puts dates into correct format
         clean_store_data["opening_date"] = pd.to_datetime(clean_store_data["opening_date"], format="mixed")
+        # remove letters from staff numbers
+        clean_store_data["staff_numbers"] = clean_store_data["staff_numbers"].str.replace("\D", "", regex=True)
 
         return clean_store_data
 
