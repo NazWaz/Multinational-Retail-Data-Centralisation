@@ -55,7 +55,7 @@ class DataExtractor:
     
     # extracts 
     def extract_from_s3(self, s3_address):
-        products_data = pd.read_csv(s3_address)
+        products_data = pd.read_csv(s3_address, index_col=0)
         return products_data
 
 

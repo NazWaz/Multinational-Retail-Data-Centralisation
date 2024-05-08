@@ -62,11 +62,12 @@ class DataCleaning:
         headers = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
         retrieve_store = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/"
         store_data = extractor.retrieve_stores_data(retrieve_store, headers)
-
+        # sets index value
+        clean_store_data = store_data.set_index("index")
         # creates mask to filter continents
         continent = ["Europe", "America"]
-        mask = store_data["continent"].isin(continent)
-        clean_store_data = store_data[mask]
+        mask = clean_store_data["continent"].isin(continent)
+        clean_store_data = clean_store_data[mask]
         # replaces eeEurope with Europe
         clean_store_data = clean_store_data.replace("eeEurope", "Europe")
         # drop lat column
@@ -122,7 +123,6 @@ class DataCleaning:
         s3_address = "s3://data-handling-public/products.csv"
         products_data = extractor.extract_from_s3(s3_address)
 
-
         clean_products_data = products_data.replace("NULL", np.nan).dropna()
         # creates mask to filter removed
         removed = ["Still_avaliable", "Removed"]
@@ -138,9 +138,14 @@ class DataCleaning:
         return clean_products_data
     
 
-
     def clean_products_data(self):
         clean_products_data = self.convert_product_weights()
+        # remove pound sign and convert data type of product price to float
+        clean_products_data["product_price"] = clean_products_data["product_price"].str.replace("£", "").astype(float)
+        # removes hyphens in category column
+        clean_products_data["category"] = clean_products_data["category"].str.replace("-", " ")
+        # puts date into correct format
+        clean_products_data["date_added"] = pd.to_datetime(clean_products_data["date_added"], format="mixed")
         
         return clean_products_data
 
