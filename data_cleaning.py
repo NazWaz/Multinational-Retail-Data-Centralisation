@@ -79,7 +79,70 @@ class DataCleaning:
         clean_store_data["staff_numbers"] = clean_store_data["staff_numbers"].str.replace("\D", "", regex=True)
 
         return clean_store_data
+    
+    @staticmethod
+    def clean_weights(weight):
+            
+            if "kg" in weight:
+                weight = weight.replace("kg", "")
+                weight = float(weight)
 
+            elif "x" in weight:
+                weight = weight.replace("g", "")
+                weight_list = weight.split(" x ")
+                weight_list = [float(i) for i in weight_list]
+                weight = weight_list[0] * weight_list[1]
+                weight = weight/1000
+
+            elif "g ." in weight:
+                weight = weight.replace("g .", "")
+                weight = float(weight)/1000
+                
+            elif "g" in weight:
+                weight = weight.replace("g", "")
+                weight = float(weight)/1000
+
+            elif "ml" in weight:
+                weight = weight.replace("ml", "")
+                weight = float(weight)/1000
+
+            elif "oz" in weight:
+
+                weight = weight.replace("oz", "")
+                weight = float(weight)*0.0283495231
+
+            else:
+                return weight
+
+            return weight
+
+    def convert_product_weights(self):
+        from data_extraction import DataExtractor
+        extractor = DataExtractor()
+        s3_address = "s3://data-handling-public/products.csv"
+        products_data = extractor.extract_from_s3(s3_address)
+
+
+        clean_products_data = products_data.replace("NULL", np.nan).dropna()
+        # creates mask to filter removed
+        removed = ["Still_avaliable", "Removed"]
+        mask = clean_products_data["removed"].isin(removed)
+        clean_products_data = clean_products_data[mask]
+        # corrects typo
+        clean_products_data = clean_products_data.replace("Still_avaliable", "Still available")
+        # casts data type of weight column to string
+        clean_products_data["weight"] = clean_products_data["weight"].astype("string")
+        # applies function to weight column and rounds to 3 d.p.
+        clean_products_data["weight"] = clean_products_data["weight"].apply(self.clean_weights).round(3)
+        
+        return clean_products_data
+    
+
+
+    def clean_products_data(self):
+        clean_products_data = self.convert_product_weights()
+        
+        return clean_products_data
 
 if __name__ == "__main__":
     cleaning = DataCleaning()

@@ -10,6 +10,8 @@ import tabula
 
 import requests
 
+import boto3
+import s3fs
 # %%
 class DataExtractor:
 
@@ -50,6 +52,12 @@ class DataExtractor:
             store_data.append(data)
         store_data = pd.DataFrame(store_data)
         return store_data
+    
+    # extracts 
+    def extract_from_s3(self, s3_address):
+        products_data = pd.read_csv(s3_address)
+        return products_data
+
 
 if __name__ == "__main__":
     extractor = DataExtractor()
@@ -63,7 +71,9 @@ if __name__ == "__main__":
     #no_of_stores = extractor.list_number_of_stores(no_of_stores, headers)
     ##retrieve_store = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/"
     ##store_data = extractor.retrieve_stores_data(retrieve_store, headers)
-   
+    #s3_address = "s3://data-handling-public/products.csv"
+    #products_data = extractor.extract_from_s3(s3_address)
+    #display(products_data.head())
 
 #%%
 

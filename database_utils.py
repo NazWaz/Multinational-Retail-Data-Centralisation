@@ -65,5 +65,9 @@ if __name__ == "__main__":
     clean_store_data = cleaning.clean_store_data()
     dbsconnector.upload_to_db(clean_store_data, "dim_store_details")
 
+    # uploads products data
+    clean_products_data = cleaning.clean_products_data()
+    dbsconnector.upload_to_db(clean_products_data, "dim_products")
+
 
 # %%
