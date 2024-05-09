@@ -74,6 +74,8 @@ if __name__ == "__main__":
     dbsconnector.upload_to_db(clean_orders_data, "orders_table")
 
     # uploads date events data
+    clean_events_data = cleaning.clean_events_data()
+    dbsconnector.upload_to_db(clean_events_data, "dim_date_times")
 
 
 # %%

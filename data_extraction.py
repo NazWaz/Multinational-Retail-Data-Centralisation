@@ -53,11 +53,15 @@ class DataExtractor:
         store_data = pd.DataFrame(store_data)
         return store_data
     
-    # extracts 
+    # extracts products CSV from S3 bucket as a dataframe
     def extract_from_s3(self, s3_address):
         products_data = pd.read_csv(s3_address, index_col=0)
         return products_data
-
+    
+    # extracts date events json from S3 bucket as a dataframe
+    def extract_json_from_s3(self, s3_address):
+        events_data = pd.read_json(s3_address)
+        return events_data
 
 if __name__ == "__main__":
     extractor = DataExtractor()

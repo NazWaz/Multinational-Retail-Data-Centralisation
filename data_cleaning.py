@@ -160,7 +160,15 @@ class DataCleaning:
 
         return clean_orders_data
     
+    def clean_events_data(self):
+        from data_extraction import DataExtractor
+        extractor = DataExtractor()
+        s3_address = "https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json"
+        events_data = extractor.extract_json_from_s3(s3_address)
+        
+        clean_events_data = events_data
 
+        return clean_events_data
 
 if __name__ == "__main__":
     cleaning = DataCleaning()
