@@ -148,6 +148,19 @@ class DataCleaning:
         clean_products_data["date_added"] = pd.to_datetime(clean_products_data["date_added"], format="mixed")
         
         return clean_products_data
+    
+    def clean_orders_data(self):
+        from data_extraction import DataExtractor
+        extractor = DataExtractor()
+        orders_data = extractor.read_rds_table("orders_table")
+        # filters columns to remove first name, last name and 1
+        clean_orders_data = orders_data[["index", "date_uuid", "user_uuid", "card_number", "store_code", "product_code", "product_quantity"]]
+        # sets index
+        clean_orders_data = clean_orders_data.set_index("index")
+
+        return clean_orders_data
+    
+
 
 if __name__ == "__main__":
     cleaning = DataCleaning()

@@ -69,5 +69,11 @@ if __name__ == "__main__":
     clean_products_data = cleaning.clean_products_data()
     dbsconnector.upload_to_db(clean_products_data, "dim_products")
 
+    # uploads orders data
+    clean_orders_data = cleaning.clean_orders_data()
+    dbsconnector.upload_to_db(clean_orders_data, "orders_table")
+
+    # uploads date events data
+
 
 # %%
