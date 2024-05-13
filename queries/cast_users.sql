@@ -1,0 +1,33 @@
+ALTER TABLE dim_users
+ALTER COLUMN first_name TYPE VARCHAR(255);
+
+ALTER TABLE dim_users
+ALTER COLUMN last_name TYPE VARCHAR(255);
+
+ALTER TABLE dim_users
+ALTER COLUMN date_of_birth TYPE DATE;
+
+ALTER TABLE dim_users
+ALTER COLUMN company TYPE VARCHAR(255);
+
+ALTER TABLE dim_users
+ALTER COLUMN email_address TYPE VARCHAR(255);
+
+ALTER TABLE dim_users
+ALTER COLUMN address TYPE VARCHAR(255);
+
+ALTER TABLE dim_users
+ALTER COLUMN country TYPE VARCHAR(14);
+
+ALTER TABLE dim_users
+ALTER COLUMN country_code TYPE VARCHAR(2);
+
+ALTER TABLE dim_users
+ALTER COLUMN phone_number TYPE VARCHAR(255);
+
+ALTER TABLE dim_users
+ALTER COLUMN user_uuid TYPE UUID
+USING user_uuid::uuid;
+
+ALTER TABLE dim_users
+ALTER COLUMN join_date TYPE DATE;
