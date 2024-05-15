@@ -7,7 +7,6 @@ import psycopg2
 import pandas as pd
 
 #%%
-
 class DatabaseConnector:
 
     def __init__(self):
@@ -40,8 +39,6 @@ class DatabaseConnector:
         HOST, PASSWORD, USER, DATABASE, PORT = [db_creds[i] for i in (5, 6, 7, 8, 9)] 
         sink_engine = sqlalchemy.create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
         data.to_sql(table_name, sink_engine, if_exists="replace")
-
-
        
 if __name__ == "__main__":
     dbsconnector = DatabaseConnector()
@@ -76,6 +73,5 @@ if __name__ == "__main__":
     # uploads date events data
     clean_events_data = cleaning.clean_events_data()
     dbsconnector.upload_to_db(clean_events_data, "dim_date_times")
-
 
 # %%

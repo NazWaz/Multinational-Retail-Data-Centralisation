@@ -8,7 +8,6 @@ import pandas as pd
 import numpy as np
 import regex
 #%%
-
 class DataCleaning:
 
     def __init__(self):
@@ -34,7 +33,6 @@ class DataCleaning:
         clean_user_data["join_date"] = pd.to_datetime(clean_user_data["join_date"], format="mixed")
 
         return clean_user_data
-
 
     # cleans card data
     def clean_card_data(self):
@@ -72,12 +70,14 @@ class DataCleaning:
         store_data = extractor.retrieve_stores_data(retrieve_store, headers)
         # sets index value
         clean_store_data = store_data.set_index("index")
-        # creates mask to filter continents
-        continent = ["Europe", "America"]
-        mask = clean_store_data["continent"].isin(continent)
+        # creates mask to filter countries
+        country_code = ["GB", "DE", "US"]
+        mask = clean_store_data["country_code"].isin(country_code)
         clean_store_data = clean_store_data[mask]
         # replaces eeEurope with Europe
         clean_store_data = clean_store_data.replace("eeEurope", "Europe")
+        # replaces eeAmerica with America
+        clean_store_data = clean_store_data.replace("eeAmerica", "America")
         # drop lat column
         clean_store_data = clean_store_data.drop("lat", axis=1)
         # replace new lines in address column
@@ -145,7 +145,6 @@ class DataCleaning:
         
         return clean_products_data
     
-
     def clean_products_data(self):
         clean_products_data = self.convert_product_weights()
         # remove pound sign and convert data type of product price to float
@@ -182,15 +181,6 @@ class DataCleaning:
         clean_events_data = clean_events_data.query("timestamp.str.len() == 8")
 
         return clean_events_data
-    
-
-    def raw_card_data(self):
-        from data_extraction import DataExtractor
-        extractor = DataExtractor()
-        link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
-        card_data = extractor.retrieve_pdf_data(link)
-        return card_data        
-
 
 if __name__ == "__main__":
     cleaning = DataCleaning()

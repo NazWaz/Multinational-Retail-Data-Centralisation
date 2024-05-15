@@ -45,7 +45,7 @@ class DataExtractor:
         # empty list for dictionaries from data
         store_data = []
         # loops through each number of store from 0 to 450
-        for store_number in range(0, no_of_stores - 1):
+        for store_number in range(0, no_of_stores):
             store = retrieve_store + f"{store_number}"
             store_data_response = requests.get(store, headers=headers)
             data = store_data_response.json()
