@@ -43,13 +43,21 @@ class DataCleaning:
         link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
         card_data = extractor.retrieve_pdf_data(link)
         # reset index values 
-        clean_card_data = card_data.reset_index(drop=True)
-        # converts data type to numeric, returning NaN if not possible
-        clean_card_data["card_number"] = pd.to_numeric(clean_card_data["card_number"], errors="coerce")
-        # replaces NULL with NaN and drops
-        clean_card_data = clean_card_data.replace("NULL", np.nan).dropna()
+        clean_card_data = card_data.reset_index(drop=True)    
+        
+        # replaces NULL with NaN
+        clean_card_data = clean_card_data.replace("NULL", np.nan)
 
-        clean_card_data.card_number = clean_card_data.card_number.astype("int64")
+        clean_card_data = clean_card_data.dropna(subset = ["date_payment_confirmed"])
+
+        # filters out incorrect expiry dates
+        clean_card_data["expiry_date"] = clean_card_data["expiry_date"].astype("string")
+        clean_card_data = clean_card_data.query("expiry_date.str.len() == 5")
+
+        # removes unwanted characters from card number column
+        clean_card_data["card_number"] = clean_card_data["card_number"].astype("string")
+        clean_card_data["card_number"] = clean_card_data["card_number"].str.replace("?", "")
+        
         # puts dates into correct format
         clean_card_data["date_payment_confirmed"] = pd.to_datetime(clean_card_data["date_payment_confirmed"], format="mixed")
 
@@ -167,8 +175,22 @@ class DataCleaning:
         events_data = extractor.extract_json_from_s3(s3_address)
         
         clean_events_data = events_data
+        # replaces _ with a space
+        clean_events_data["time_period"] = clean_events_data["time_period"].replace("_", " ", regex=True)
+        # limits timestamp column to string length of 8
+        clean_events_data["timestamp"] = clean_events_data["timestamp"].astype("string")
+        clean_events_data = clean_events_data.query("timestamp.str.len() == 8")
 
         return clean_events_data
+    
+
+    def raw_card_data(self):
+        from data_extraction import DataExtractor
+        extractor = DataExtractor()
+        link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
+        card_data = extractor.retrieve_pdf_data(link)
+        return card_data        
+
 
 if __name__ == "__main__":
     cleaning = DataCleaning()

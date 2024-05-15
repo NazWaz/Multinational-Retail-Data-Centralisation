@@ -28,7 +28,7 @@ class DataExtractor:
     
     # takes in link and returns pd DataFrame
     def retrieve_pdf_data(self, link):
-        card_data_list = tabula.read_pdf(link, pages="all")
+        card_data_list = tabula.read_pdf(link, multiple_tables=True, pages="all", lattice=True)
         card_data = pd.concat(card_data_list)
         return card_data
     
