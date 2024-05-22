@@ -50,7 +50,7 @@ The user data was the historical data of the users stored in an AWS database.
 
 ![](Documentation/2/9.png)
 
-- The `clean_user_data()` method in the `DataCleaning` class was used to perform the cleaning of the user data. The `legacy_users` table was used to extract the user data firstly. Then the index value was set to the index column using `DF.set_index("index")`.
+- The `clean_user_data()` method in the `DataCleaning` class was used to perform the cleaning of the user data. The `legacy_users` table was used to extract the user data firstly. Then the index value was set to the `index` column using `DF.set_index("index")`.
 
 - Any null values were replaced with NaN and dropped using `DF.replace("NULL", np.nan)` and `DF.dropna()`.
 
@@ -148,7 +148,7 @@ The products data was the data of each product the company sells stored as a CSV
 
 ![](Documentation/2/21.png)
 
-- The `convert_product_weights` method was used to clean some parts of the products data and also used the helper function `clean_weights(weight)` to clean and convert the product weights.
+- The `convert_product_weights()` method was used to clean some parts of the products data and also used the helper function `clean_weights(weight)` to clean and convert the product weights.
 
 - Any null values were replaced with NaN and dropped.
 
@@ -158,7 +158,7 @@ The products data was the data of each product the company sells stored as a CSV
 
 ![](Documentation/2/22.png)
 
-- The `clean_products_data` method was used to finish cleaning up the products data.
+- The `clean_products_data()` method was used to finish cleaning up the products data.
 
 - The pound sign was removed from the `product_price` column using `DF["column_name"]str.replace()` and was casted to a float datatype using `.astype(float)`.
 
@@ -176,11 +176,15 @@ The orders data was the data for all orders the company made stored in an AWS RD
 
 ![](Documentation/2/24.png)
 
--
+- The `clean_orders_data()` method was used to perform the cleaning of the orders data. The intial orders data set was extracted using the `read_rds_table()` method from earlier using the table name `orders_table` as an argument.
+
+- The columns were filtered to removed the `first_name`, `last_name` and `1` columns which were not needed for this dataframe.
+
+- Finally, the index value was set to the `index` column.
 
 ![](Documentation/2/25.png)
 
--
+- Once the orders data was cleaned, it was returned here as `clean_orders_data` and uploaded to the database with the table name `orders_table`.
 
 # Data events data
 
@@ -188,15 +192,19 @@ The data events data was the data of when each sale happened as well as related 
 
 ![](Documentation/2/26.png)
 
--
+- The `extract_json_from_s3()` method was used to extracts the date events JSON using an S3 address as an argument to return a dataframe.
 
 ![](Documentation/2/27.png)
 
--
+- The `clean_events_data()` method was used to perform the cleaning of the date events data. 
+
+- In the `time_period` column, the `_` character was replaced with an empty string.
+
+- The `timestamp` column was casted to the string datatype and limited to a length of 8 to remove any rows with irregular values in this column.
 
 ![](Documentation/2/28.png)
 
--
+- Once the date events data was cleaned, it was returned here as `clean_events_data` and uploaded to the database with the table name `dim_date_times`.
 
 
 ## Milestone 3
