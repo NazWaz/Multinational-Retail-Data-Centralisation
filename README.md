@@ -34,23 +34,23 @@ The user data was the historical data of the users stored in an AWS database.
 
 ![](Documentation/2/5.png)
 
-- A yaml file `db_creds.yaml` was created to contain all the database credentials containing the user data. This file was added to the `.gitignore` file so it wouldn't be visible publicly on Github. This method `read_db_creds` was used to read this yaml file and return the credentials as a dictionary.
+- A yaml file `db_creds.yaml` was created to contain all the database credentials containing the user data. This file was added to the `.gitignore` file so it wouldn't be visible publicly on Github. This method `read_db_creds()` was used to read this yaml file and return the credentials as a dictionary.
 
 ![](Documentation/2/6.png)
 
-- The `init_db_engine` method in the `DatabaseConnector` class was used to initialise and return a sqlalchemy database engine as the `source_engine` using the database credentials from earlier.
+- The `init_db_engine()` method in the `DatabaseConnector` class was used to initialise and return a sqlalchemy database engine as the `source_engine` using the database credentials from earlier.
 
 ![](Documentation/2/7.png)
 
-- The `list_db_tables` was used to extract and list all the table names present within this database.
+- The `list_db_tables()` was used to extract and list all the table names present within this database.
 
 ![](Documentation/2/8.png)
 
-- The `read_db_tables` method in the `DataExtractor` class was used to extract a database table to return a dataframe using a table name as an argument.
+- The `read_db_tables()` method in the `DataExtractor` class was used to extract a database table to return a dataframe using a table name as an argument.
 
 ![](Documentation/2/9.png)
 
-- The `clean_user_data` method in the `DataCleaning` class was used to perform the cleaning of the user data. The `legacy_users` table was used to extract the user data firstly. Then the index value was set to the index column using `DF.set_index("index")`.
+- The `clean_user_data()` method in the `DataCleaning` class was used to perform the cleaning of the user data. The `legacy_users` table was used to extract the user data firstly. Then the index value was set to the index column using `DF.set_index("index")`.
 
 - Any null values were replaced with NaN and dropped using `DF.replace("NULL", np.nan)` and `DF.dropna()`.
 
@@ -62,7 +62,7 @@ The user data was the historical data of the users stored in an AWS database.
 
 ![](Documentation/2/10.png)
 
-- The `upload_to_db` method was used to upload data to the `sales_data` database using new credentials from the yaml file aswell as the dataframe and desired table name within pgAdmin4 as arguments.  
+- The `upload_to_db()` method was used to upload data to the `sales_data` database using new credentials from the yaml file aswell as the dataframe and desired table name within pgAdmin4 as arguments.  
 
 ![](Documentation/2/11.png)
 
@@ -74,15 +74,23 @@ The card data was the data of the users card details stored in a PDF in an AWS S
 
 ![](Documentation/2/12.png)
 
--
+- The `retrieve_pdf_data()` method was used to extract all pages of card details data from a pdf file to return a dataframe using the S3 link. Various flags such as `multiple_tables=True`, `pages="all"` and `lattice=True` were used to ensure all the correct data was extracted.
 
 ![](Documentation/2/13.png)
 
--
+- The `clean_card_data()` method was used to perform the cleaning of the card data. The data was extracted using the `retrieve_pd_data()` method and the index was reset using `DF.reset_index(drop=True)`. 
+
+- Any null values were replaced with NaN and the rows for any null values in the `date_payment_confirmed` column were dropped.
+
+- To clean the data further, incorrect expiry dates were filtered out by casting the `expiry_date` column to a string using `.astype("string")` and limiting the length of this value to 5 characters using `DF.query("column_name.str.len() == ?")`.
+
+- Unwanted characters such as `?` were removed from the `card_number` by again casting this column datatype to a string and using `DF["column_name"].str.replace()`.
+
+- Finally the `date_payment_confirmed` column was put into the correct date format.
 
 ![](Documentation/2/14.png)
 
--
+- Once the card data was cleaned, it was returned here as `clean_card_data` and uploaded to the database with the table name `dim_card_details`.
 
 # Store data
 
