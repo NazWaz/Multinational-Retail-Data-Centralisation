@@ -78,7 +78,7 @@ The card data was the data of the users card details stored in a PDF in an AWS S
 
 ![](Documentation/2/13.png)
 
-- The `clean_card_data()` method was used to perform the cleaning of the card data. The data was extracted using the `retrieve_pd_data()` method and the index was reset using `DF.reset_index(drop=True)`. 
+- The `clean_card_data()` method was used to perform the cleaning of the card data and the index was reset using `DF.reset_index(drop=True)`. 
 
 - Any null values were replaced with NaN and the rows for any null values in the `date_payment_confirmed` column were dropped.
 
@@ -94,23 +94,35 @@ The card data was the data of the users card details stored in a PDF in an AWS S
 
 # Store data
 
-The store data was the data of the store details and was extracted through the use of an API.
+The store data was the data of the store details and was extracted through the use of an API. The API had to GET methods, one for returning the number of stores within the business and another to retrieve a store given a specific store number.
 
 ![](Documentation/2/15.png)
 
--
+- The `list_number_of_stores()` method was used to extract a JSON from the API to return the number of stores using this API endpoint along with a header dictionary as arguments. 
 
 ![](Documentation/2/16.png)
 
--
+- The `retrieve_stores_data()` method was used to extract a dictionary of all the stores from the API to return a dataframe using another API endpoint and a headers dictionary as arguments. A `for` loop was used to iterate from 0 to 450 for all of the stores and splicing this value onto the end of the API endpoint each time. Then using `requests.get()` then `.json()` extracted the information for each store. 
 
 ![](Documentation/2/17.png)
 
--
+- The `clean_store_data` method was used to perform the cleaning of the store data. 
+
+- A mask was created to filter valid country codes to eliminate any rows with irregular values in the `country_code` column.
+
+- The irregulary `continent` values were cleaned up using `.replace()`.
+
+- The lat column was dropped using `.drop("column_name", axis=1)`.
+
+- Any new lines in the `address` column were removed using `DF["column_name"].str.replace("\n", " ")`.
+
+- The `opening_date` column was cast to the correct date format.
+
+- Finally any letters were removed from the `staff_numbers` column using regex with `DF["column_name"].str.replace("\D", "", regex=True)`
 
 ![](Documentation/2/18.png)
 
--
+- Once the store data was cleaned, it was returned here as `clean_store_data` and uploaded to the database with the table name `dim_store_details`.
 
 # Products data
 
@@ -118,23 +130,45 @@ The products data was the data of each product the company sells stored as a CSV
 
 ![](Documentation/2/19.png)
 
--
+- The `extract_from_s3()` method was used to extract data from the products CSV to return a dataframe using the S3 address as an argument.  
 
 ![](Documentation/2/20.png)
 
--
+- A helper function `'clean_weights(weight)` was created as a static method to clean all the weights in the `weights` column. Using multiple `if` and `elif` statements, various conditions were set up to ensure every weight value was converted to the same kg units.
+
+- If `kg` was present in `weight`, it was replaced with an empty string and converted to a float value using `float(weight)`.
+
+- If `x` was present in `weight`, the `g` character was replaced with an empty string and the string was split with ` x ` as the seperator and assigned to a list. This worked because it was a multiplication of 2 different weight values. A `for` loop iterated through this list to multiply out both values to return a total weight and this value was then divided by a 1000 to convert from `g` to `kg`.
+
+- If `g .`, `g` or `ml` were present in `weight`, they were replaced with an empty string and the weight value was divided by 1000. 
+
+- If `oz` was present in `weight`, the `oz` character was replaced with an empty string and multiplied by a value to convert this weight to `kg`.
+
+- The `else` condition was just to return the weight if there were no units.
 
 ![](Documentation/2/21.png)
 
--
+- The `convert_product_weights` method was used to clean some parts of the products data and also used the helper function `clean_weights(weight)` to clean and convert the product weights.
+
+- Any null values were replaced with NaN and dropped.
+
+- A mask was created to filter valid options in the `still_available` column to eliminate irregular values.
+
+- The `weight` column was casted to a string data type before the helper function was applied using `DF["column_name"].apply(self.clean_weights)` and this weight value was rounded to 3 decimal places using `.round(3)`.
 
 ![](Documentation/2/22.png)
 
--
+- The `clean_products_data` method was used to finish cleaning up the products data.
+
+- The pound sign was removed from the `product_price` column using `DF["column_name"]str.replace()` and was casted to a float datatype using `.astype(float)`.
+
+- The hyphen in the `category` column was removed.
+
+- Finally the `date_added` column was cast to the correct date format.
 
 ![](Documentation/2/23.png)
 
--
+- Once the products data was cleaned, it was returned here as `clean_products_data` and uploaded to the database with the table name `dim_products`.
 
 # Orders data
 
