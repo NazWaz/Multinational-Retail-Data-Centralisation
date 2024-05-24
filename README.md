@@ -209,43 +209,85 @@ The data events data was the data of when each sale happened as well as related 
 
 ## Milestone 3
 
-This milestone was
+This milestone was to ensure all of the table columns were of the correct data type and also was to develop the star-based schema of the database with the `orders_table` as the table linking all the `dim` tables together.
 
 ![](Documentation/3/1.png)
 
--
+- The `date_uuid` and `user_uuid` columns of the `orders_table` table were cast to the `UUID` data type.
+
+- The `card_number`, `store_code` and `product_code` columns were cast to the `VARCHAR()` data type where the number here represented the max character length.
+
+- The `product_quantity` column was cast to the `SMALLINT` datatype.
 
 ![](Documentation/3/2.png)
 
--
+- The `first_name`, `last_name`, `company`, `email_address`, `address` and `phone_number` columns of the `dim_users` table were cast to the `VARCHAR(255)` data type with the `255` here being used as a limit.
+
+- The `date_of_birth` and `join_date` columns were cast to the `DATE` data type.
+
+- The `country` and `country_code` columns were cast to the `VARCHAR()` data type with specific character limits.
+
+- The `user_uuid` column was cast to the `UUID` data type.
 
 ![](Documentation/3/3.png)
 
--
+- Before casting any column data types, the `dim_stores_details` was updated to replace `NaN` values in the first row for specific columns with `NULL`. This is for the row containing the webstore information.
+
+- The `address`, `locality`, `store_type` and `continent` columns were cast to the `VARCHAR(255)` data type.
+
+- The `longitude` and `latitude` columns were cast to the `FLOAT` data type using a `NUMERIC(15, 5)` data type to limit the total digits to 15 with 5 after the decimal point.
+
+- The `store_code` and `country_code` columns were cast to the `VARCHAR()` data types.
+
+- The `staff_numbers` column was cast to the `SMALLINT` data type.
+
+- The `opening_date` column was cast to the `DATE` data type.
 
 ![](Documentation/3/4.png)
 
--
+- A column `weight_class` was added to the `dim_products` table with a data type `VARCHAR()` to assign weight classes for different weight ranges.
+
+- `SET` and `WHERE` clauses were used to insert and replace values in this column based on the value in the `weight` column.
 
 ![](Documentation/3/5.png)
 
--
+- The `product_name` and `category` columns of the `dim_products` table were cast to the `VARCHAR(255)` data type.
+
+- The `product_price` and `weight` columns were cast to the `FLOAT` data type.
+
+- The `EAN`, `product_code` and `weight_class` columns were cast to the `VARCHAR()` data type.
+
+- The `date_added` column was cast to the `DATE` data type.
+
+- The `uuid` column was cast to the `UUID` data type.
+
+- The `removed` column was renamed to `still_available` where the `Still available` value here was replaced with `Yes` and `Removed` was replaced with `No` so this column could be cast to the `BOOL` data type.
 
 ![](Documentation/3/6.png)
 
--
+- The `timestamp` column of the `dim_date_times` table was cast to the `TIME` data type.
+
+- The `month`, `year`, `day` and `time_period` columns were cast to the `VARCHAR()` data type.
+
+- The `date_uuid` column was cast to the `UUID` data type.
 
 ![](Documentation/3/7.png)
 
--
+- The `card_number` and `expiry_date` columns of the `dim_card_details` table were cast to the `VARCHAR()` data type. 
+
+- The `card_provider` column was cast to the `VARCHAR(255)` data type.
+
+- The `date_payment_confirmed` column was cast to the `DATE` data type.
 
 ![](Documentation/3/8.png)
 
--
+- Once all the tables had the appropriate data types, primary keys were added to each of the `dim` tables.
+
+- The `user_uuid`, `store_code`, `product_code`, `date_uuid` and `card_number` columns were all updated with the primary key constraints.
 
 ![](Documentation/3/9.png)
 
--
+- The foreign keys were then added to the `orders_table` table with each column referencing the primary keys of the other tables, completing the star-based database schema.
 
 
 ## Milestone 4
