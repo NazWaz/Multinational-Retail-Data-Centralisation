@@ -292,76 +292,126 @@ This milestone was to ensure all of the table columns were of the correct data t
 
 ## Milestone 4
 
-This milestone was
+This milestone was to set up multiple queries to extract and analyse data from the database. 
 
 ![](Documentation/4/1.png)
 
--
-
 ![](Documentation/4/2.png)
 
--
+- This query was to find out how many stores the business has and in which countries.
+
+- The row containing the webstore in the `dim_store_details` table was excluded using the `WHERE` clause to ensure there was no `NULL` values in the `locality` column.
+
+- The rows were then grouped by `country_code` to group the rows into the three country codes: `GB`, `DE` and `US`.
+
+- The `country_code` column (renamed to country) was returned along with the column `total_no_stores` containing the number of `store_code` rows using the `COUNT()` function. As each store had a unique store code each row in the `store_code` column corresponded to a single store.
+
+- Finally the data was ordered by the total number of stores from highest to lowest.
 
 ![](Documentation/4/3.png)
 
--
-
 ![](Documentation/4/4.png)
 
--
+- This query was to find out which locations have the most stores.
+
+- The rows from the `dim_store_details` table were grouped by `locality` and a `HAVING` clause was used to ensure only the locality values with the `COUNT(store_code)` value being more than or equal to 10.
+
+- The `locality` column was returned along with the `total_no_stores` column.
+
+- The data was then ordered by the total number of stores from highest to lowest.
 
 ![](Documentation/4/5.png)
 
--
-
 ![](Documentation/4/6.png)
 
--
+- This query was to find out which months produced the most sales.
+
+- The rows from the `orders_table` column were joined with rows from the `dim_date_times` and `dim_products` tables using `INNER JOIN` along with the reference columns used in the primary and foreign keys.
+
+- The rows in this combined table were then grouped by `month`.
+
+- To find the total sales, the `product_price` value was multiplied by the `product_quantity` value and as the rows were grouped by month a `SUM()` could be taken to find the total sales across that month. `ROUND(,)` was used after casting this `total_sales` value to a `NUMERIC` data type to round this value to 2 decimal places.
+
+- The `total_sales` column was returned along with the `month` column.
+
+- The data was then ordered by the total sales from highest to lowest and only the first 6 results were shown using a `LIMIT` clause.
 
 ![](Documentation/4/7.png)
 
--
-
 ![](Documentation/4/8.png)
 
--
+- This query was to find out the online vs offline sales.
+
+- The rows from the `orders_table` table were joined with rows from the `dim_store_details` and `dim_products` tables.
+
+- The `GROUP BY` clause contained a `CASE WHEN` and `ELSE` clauses as a conditional clause so that when the `store_type` value was `Web Portal` then the data was grouped by `Web` otherwise it was grouped by `Offline`.
+
+- The `numbers_of_sales` column was returned as the `COUNT()` of the `product_code` column while the `product_quantity_count` column was returned as the sum of the `product_quantity` column. Both of these columns were returned along with a `location` column.
+
+- The data was then ordered by the number of sales.
 
 ![](Documentation/4/9.png)
 
--
-
 ![](Documentation/4/10.png)
 
--
+- This query was to find the percentage of sales that come from each type of store.
+
+- The rows from the `orders_table` table were joined with rows from the `dim_store_details` and `dim_products` tables and grouped by `store_type`.
+
+- The `total_sales` column was taken as a `SUM()` function of the multiplied value of `product_price` and `product_quantity` columns as before. The `percentage_total` column was taken as the `COUNT()` of the `store_type` rows over the `COUNT()` of all of the rows in the table. This returned the percentage of sales for each store and this column was also cast to a `NUMERIC` data type and rounded to 2 decimal places. 
+
+- The data was then ordered by the total sales from highest to lowest.
 
 ![](Documentation/4/11.png)
 
--
-
 ![](Documentation/4/12.png)
 
--
+- This query was to find which month in each year produced the highest cost of sales.
+
+- The rows from the `orders_table` table were joined with rows from the `dim_products` and `dim_date_times` tables and grouped by `year` and then by `month`. 
+
+- The `total_sales` column was returned along with the `year` and `month` columns. This time the total sales was the total sales made each month for each year.
+
+- The data was then ordered by the total sales from highest to lowest and only the first 10 results were shown.
 
 ![](Documentation/4/13.png)
 
--
-
 ![](Documentation/4/14.png)
 
--
+- This query was to find the staff headcount in each continent.
+
+- The rows from the `dim_store_details` table were grouped by `country_code`.
+
+- The `total_staff_numbers` column was returned as the `SUM()` of the `staff_numbers` rows along with the `country_code` column.
+
+- The data was then ordered by the total number of staff from highest to lowest.
 
 ![](Documentation/4/15.png)
 
--
-
 ![](Documentation/4/16.png)
 
--
+- This query was to find which German store type was selling the most.
+
+- The rows from the `orders_table` table were joined with rows from the `dim_products` and `dim_store_details` tables.
+
+- The `WHERE` clause was used to filter for only rows with the `country_code` value equal to `DE` and then the rows were grouped by `store_type` and `country_code`.
+
+- The `total_sales` column was returned along with the `store_type` and `country_code` columns.
+
+- The data was then ordered by the total sales.
 
 ![](Documentation/4/17.png)
 
--
-
 ![](Documentation/4/18.png)
 
--
+- This query was to find how quickly the company was making sales.
+
+- Several common table expressions (CTEs) were made using `WITH table_name AS()` for this query.
+
+- The first CTE was used to combine several date and time components from the `dim_date_times` table to return a `time_stamp` column using `make_timestamp()` together with all the date and time columns. The hour, minute and second components are taken from the `timestamp` column i.e. using `EXTRACT(hour FROM timestamp)`.
+
+- The second CTE used the first CTE `time_1` to return the `year` and `time_stamp` columns. A third column is returned called `lead` which used the `LEAD() OVER ()` function with the `time_stamp` column and was ordered by the `time_stamp` column also to return the next consecutive `time_stamp` value from each row.
+
+- The third CTE used the second CTE `time_2` filtering out any `lead` values that were `NULL` and grouped the rows by `year`. The `year` column was returned along with the `avg_times` column, the average difference between the the `time_stamp` and `lead` column values using the `AVG()` function. The data was then ordered by `year` from highest to lowest.
+
+- Finally the `year` column along with a column `actual_time_taken` was selected from the third CTE `time_3`. The `actual_time_taken` column concatenated strings to represent the time values along with the time components themselves from the `avg_times` column using `EXTRACT()`. The data was then ordered by `avg_times` from highest to lowest and filtered to show only 5 results using a `LIMIT` clause.
